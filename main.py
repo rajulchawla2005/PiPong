@@ -43,6 +43,7 @@ def initialise():
 	borders.append(right_rect)
 	
 	# draw the player (x=bar_height/2, y=max_width/2-player_height/2, width=bar_height/2, height=150)
+	global player_rect
 	player_rect = pygame.draw.rect(screen, "white", ((bar_height/2), 285, bar_height/2, 150))
 	
 	# put both scores down
@@ -74,15 +75,55 @@ def computer_score_increase():
 	global computer_score
 	computer_score += 1
 	update_score()
+	
+def player_up():
+	global player_rect
+	# get a copy of the current player rectangle
+	new_player_rect = player_rect.copy()
+	# move that copy up
+	new_player_rect.move_ip(0, -5)
+	# check if up movement is valid, does it intersect the top bar
+	if new_player_rect.colliderect(bounces[0]):
+		# if so, don't update anything
+		return
+	# draw the old rectangle as black (blends in)
+	pygame.draw.rect(screen, "black", player_rect)
+	# draw the new rectangle as white
+	pygame.draw.rect(screen, "white", new_player_rect)
+	# update the player rectangle to this new one
+	player_rect = new_player_rect
+	
+	
+def player_down():
+	global player_rect
+	# get a copy of the current player rectangle
+	new_player_rect = player_rect.copy()
+	# move that copy down
+	new_player_rect.move_ip(0, 5)
+	# check if down movement is valid, does it intersect the bottom bar
+	if new_player_rect.colliderect(bounces[1]):
+		# if so, don't update anything
+		return
+	# draw the old rectangle as black (blends in)
+	pygame.draw.rect(screen, "black", player_rect)
+	# draw the new rectangle as white
+	pygame.draw.rect(screen, "white", new_player_rect)
+	# update the player rectangle to this new one
+	player_rect = new_player_rect
 
 def check_player_input():
 	# get user input
 	keys = pygame.key.get_pressed()
+	# if the up key has been pressed
 	if keys[pygame.K_UP]:
-		print("up key has been pressed")
+		player_up()
+		# don't check for a different input
+		return
+	# if the down key has been pressed
 	if keys[pygame.K_DOWN]:
-		print("down key has been pressed")
-				
+		player_down()
+		# don't check for a different input
+		return
 
 def update():
 	check_player_input()
